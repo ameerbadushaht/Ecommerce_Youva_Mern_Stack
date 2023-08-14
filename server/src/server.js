@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 mongoose.connect(
-    "mongodb+srv://ameer:ameer123@ecom.caioktm.mongodb.net/ecomData?retryWrites=true&w=majority",
+    "// enter your mongoDB connection",
     {
         useNewUrlParser : true,
         useUnifiedTopology: true,
