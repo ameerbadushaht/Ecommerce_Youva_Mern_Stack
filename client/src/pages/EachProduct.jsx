@@ -7,11 +7,13 @@ import Navbar from "../components/Navbar";
 import { Container,Link , Grid, Paper, Typography } from "@mui/material";
 import { useGetUserID } from "../hooks/useGetUserID";
 
+
 function EachProduct() {
   const { productId } = useParams();
   const [product, setProducts] = useState([]);
   const navigate = useNavigate()
   const userID = useGetUserID();
+  const [quantity, setQuantity] = useState(1);
 
 
   useEffect(() => {
@@ -28,18 +30,46 @@ function EachProduct() {
     fetchProduct();
   }, [productId]);
 
+  // const [clickedProducts, setClickedProducts] = useState({});
 
-const handle= async(productId)=>{
+  const favoriteProduct = async (productID) => {
+    try {
+      const response = await axios.post("http://localhost:3001/fav/add", {
+        userID: userID,
+        productID,
+      });
+      alert("Added to wishlist")
+
+      // setClickedProducts((prevClickedProducts) => ({
+      //   ...prevClickedProducts,
+      //   [productID]: true,
+      // }));
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
+    }
+  };
+
+
+  
+
+const addToCart= async(productID,price)=>{
 // 
 try{ 
-  const response = await axios.post('http://localhost:3001/cart',{
-    userID:userID,
-    productId,
+  const response = await axios.post('http://localhost:3001/cart/add',{
+    userID,
+        cartItems: {
+          productID,
+          quantity,
+          price,
+        },
     if(response){
-      navigate(`/Cart/${productId}`)
+      // navigate(`/Cart/${productID}`)
+      
     }
+
   });
-  console.log(response.data.message);
+  alert("Cart added")
+
    
 }catch(error){ console.error("Error adding to Cart : ", error);}
 }
@@ -72,7 +102,7 @@ try{
                     {product.name}
                   </Typography>
                   <Typography variant="h6" className="price">
-                    $ {product.price}
+                  ₹ {product.price}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
                     Brand: {product.brand}
@@ -84,9 +114,10 @@ try{
                     Size: {product.size}
                   </Typography>
                   <Grid>
-                    <Grid item direction="column" onClick={()=>handle(productId)} cursor="pointer">
+                    <Grid item direction="column"  cursor="pointer">
                       <Typography variant="subtitle3" component="div" >
-                       <Link sx={{textDecoration:'none', color:"black", cursor:"pointer"}}>ADD TO CART</Link> 
+                       <Link sx={{textDecoration:'none', color:"black", cursor:"pointer"}} onClick={()=>addToCart(product._id,product.price)}>ADD TO CART</Link> 
+                       <Link sx={{textDecoration:'none',marginLeft:"200px", color:"black", cursor:"pointer"}} onClick={() => favoriteProduct(product._id)}>ADD TO WHISHLIST</Link>
                       </Typography>
                     </Grid>
                   </Grid>
