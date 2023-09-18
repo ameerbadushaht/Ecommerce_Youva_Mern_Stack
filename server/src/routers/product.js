@@ -65,6 +65,14 @@ router.get('/list/:userID', async (req, res) => {
     }
 });
 
-
+router.get('/:productID',async(req,res)=>{
+    const productID = req.params.productID;
+    try{
+        const product = await ProductModel.findById(productID);
+        res.json(product);
+    }catch (error) {
+        res.json({ error: error.message });
+    }
+})
 
 export default router;
