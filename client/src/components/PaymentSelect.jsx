@@ -157,7 +157,7 @@ function PaymentSelect() {
               </FormControl>
 
               <FormControl sx={{ marginTop: "-8px" }}>
-                {/* <FormLabel>Expiry date</FormLabel> */}
+               
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DatePicker"]}>
                     <DatePicker
@@ -171,19 +171,19 @@ function PaymentSelect() {
               </FormControl>
 
               <FormControl>
-                {/* <FormLabel>CVC/CVV</FormLabel> */}
+               
                 <TextField
                   id="outlined-basic"
                   label="CVV"
                   variant="outlined"
-                  // onChange={(e) => handleChange(e)}
+                 
 
                   inputProps={{ maxLength: 3 }}
                 />
               </FormControl>
 
               <FormControl sx={{ gridColumn: "1/-1" }}>
-                {/* <FormLabel>Card holder name</FormLabel> */}
+               
                 <TextField label="Enter cardholder's full name" />
               </FormControl>
 
@@ -196,7 +196,7 @@ function PaymentSelect() {
           </form>
         ) : (
           <form
-          // onSubmit={handleSubmit}
+          
           >
             <CardContent
               sx={{
@@ -205,7 +205,7 @@ function PaymentSelect() {
                 gap: 1.5,
               }}
             >
-              {/* UPI input fields */}
+              
               <FormControl>
                 <FormLabel>Enter UPI ID</FormLabel>
                 <Input
