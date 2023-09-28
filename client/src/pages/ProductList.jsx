@@ -6,6 +6,8 @@ import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import { mobile } from "../responsive";
 
+/// This is Navbar and header in all products section
+
 const Container = styled.div``;
 
 const Title = styled.h1`
@@ -76,7 +78,8 @@ const ProductList = () => {
           </Select>
         </Filter>
       </FilterContainer>
-      <Products />
+      
+      <Products />      {/* All product Shows  */}        
       <Newsletter />
       <Footer />
     </Container>
