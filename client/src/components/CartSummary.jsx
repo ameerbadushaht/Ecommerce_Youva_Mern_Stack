@@ -4,11 +4,20 @@ import styled from "styled-components";
 import { useGetUserID } from "../hooks/useGetUserID";
 
 import { mobile } from "../responsive";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
-function CartSummary() {
+function CS() {
   const userID = useGetUserID();
-  const [cart,setCart] = useState({ cartItems: [] });
-  const shippingCost = 50.90
+  
+  const [cart, setCart] = useState({ cartItems: [] });
+  
+  const [show, setShow] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [ErrorMessage, setErrorMessage] = useState("");
+  const [orderID, setOrderID] = useState(false);
+
+  const shippingCost = 50;
+
 
   useEffect(() => {
     const fetchCartProducts = async () => {
@@ -23,6 +32,7 @@ function CartSummary() {
     };
     fetchCartProducts();
   }, []);
+  
   const calculateTotal = () => {
     let total = 0;
     cart.cartItems.forEach((product) => {
@@ -32,47 +42,112 @@ function CartSummary() {
   };
 
   const calculateShippingDiscount = () => {
-    // Check if the total amount is greater than 5000
-    if (calculateTotal() > 5000) {
-      // If it is, subtract the shipping cost
+    
+    if (calculateTotal() > 50) {
+      
       return shippingCost;
     } else {
-      // Otherwise, no discount
+    
       return 0;
     }
   };
+  const calculateTotalWithDiscount = () => {
+    return `${calculateTotal() + shippingCost - calculateShippingDiscount()}`;
+  };
 
-  const payNow=()=>{
-    //To be Added
-  }
+  
+  const createOrder = (data, actions) => {
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: calculateTotalWithDiscount(), // Pass the calculated total here
+          },
+        },
+      ],
+    }).then((orderID) => {
+      setOrderID(orderID);
+      
+      return orderID;
+
+    });
+  };
+  // check Approval
+  const onApprove = (data, actions) => {
+    return actions.order.capture().then(function (details) {
+      const { payer } = details;
+      // console.log(payer);
+      setSuccess(true);
+    });
+  };
+
+  //capture likely error
+  const onError = (data, actions) => {
+    setErrorMessage("An Error occured with your payment ");
+  };
+
+  useEffect(() => {
+    if (success) {
+      try {
+        
+      alert("Payment successful!!");
+      console.log("Order successful . Your order id is--", orderID);
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+      
+    }
+  }, [success]);
+
   return (
-    <Container>
-      <Wrapper>
-        <Bottom>
-         
-        <Summary>
-            <SummaryTitle>ORDER SUMMARY</SummaryTitle>
-            <SummaryItem>
-              <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>₹ {calculateTotal()} </SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>₹ 50.90</SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>₹-{calculateShippingDiscount()}</SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem type="total">
-              <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>₹{calculateTotal() + shippingCost - calculateShippingDiscount()}</SummaryItemPrice>
-            </SummaryItem>
-            <Button onClick={()=>{payNow()}}>PAY NOW</Button>
-          </Summary>
-        </Bottom>
-      </Wrapper>
-    </Container>
+    <>
+      <PayPalScriptProvider
+        options={{
+          "client-id":
+            "AerCK_1vG7Mwtnr6dQ8QS97b-IBO14gntin1nwoCzDTHFMbQrUklr9pa0E4BEfQu1ni_6fYuobJCHMxG",
+        }}
+      >
+        <Container>
+          <Wrapper>
+            <Bottom>
+              <Summary>
+                <SummaryTitle>ORDER SUMMARY</SummaryTitle>
+                <SummaryItem>
+                  <SummaryItemText>Subtotal</SummaryItemText>
+                  <SummaryItemPrice>$ {calculateTotal()} </SummaryItemPrice>
+                </SummaryItem>
+                <SummaryItem>
+                  <SummaryItemText>Estimated Shipping</SummaryItemText>
+                  <SummaryItemPrice>$ 50</SummaryItemPrice>
+                </SummaryItem>
+                <SummaryItem>
+                  <SummaryItemText>Shipping Discount</SummaryItemText>
+                  <SummaryItemPrice>
+                    $ -{calculateShippingDiscount()}
+                  </SummaryItemPrice>
+                </SummaryItem>
+                <SummaryItem type="total">
+                  <SummaryItemText>Total</SummaryItemText>
+                  <SummaryItemPrice>
+                    ${calculateTotalWithDiscount()}
+                  </SummaryItemPrice>
+                </SummaryItem>
+                <Button onClick={() => setShow(true)}>PAY NOW</Button>
+              </Summary>
+            </Bottom>
+          </Wrapper>
+        </Container>
+        {show ? (
+  <PayPalButtons
+    style={{ layout: "vertical" }}
+    createOrder={(data, actions) => createOrder(data, actions)} // Pass a function here
+    onApprove={onApprove}
+    onError={onError} // Don't forget to include onError
+  />
+) : null}
+      </PayPalScriptProvider>
+    </>
   );
 }
 
@@ -121,4 +196,4 @@ const Button = styled.button`
   font-weight: 600;
 `;
 
-export default CartSummary;
+export default CS;
