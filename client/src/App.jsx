@@ -12,6 +12,7 @@ import SellerProduct from "./pages/SellerProduct";
 import Fav from "./pages/Fav";
 import EachProduct from "./pages/EachProduct";
 import CheckOut from "./pages/CheckOut";
+import Payment from "./pages/Payment";
 
 const App = () => {
   return(
@@ -30,6 +31,9 @@ const App = () => {
       <Route path="/fav" element={<Fav/>}/>
       <Route path="/CheckOut" element={<CheckOut/>}/>
       <Route path="/eachproduct/:productId" element={<EachProduct/>} />
+      <Route path="/payment/:total" element={<Payment/>} />
+      <Route path="/payment" element={<Payment/>} />
+
     </Routes>
   </Router>
   )
