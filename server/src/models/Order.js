@@ -32,6 +32,7 @@ const OrderSchema= new mongoose.Schema(
                 addressLine2: { type: String,},
                 state:{type: String,required: true},
                 city:{type: String,required: true},
+                phnumber:{type: String,required: true},
                 postalCode:{type: String,required: true},
             }
           ],
