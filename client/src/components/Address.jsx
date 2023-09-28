@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-// import Divider from "@mui/joy/Divider";
-// import Typography from "@mui/joy/Typography";
+
 import { useGetUserID } from "../hooks/useGetUserID";
 import { Box, Button, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 function Address() {
   const [addressLine1, setAddressLine1] = useState("");
-  const [addressLine2, setAddressLine2] = useState("");
+  const [addressLine2, setAddressLine2] = useState(""); 
+  const [phnumber, setPhnumber] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [isValid, setIsValid] = useState(true);
-  // const [isSubmitted, setSubmitted] = useState(false);
+  
   const [isEditing, setIsEditing] = useState(false);
   const userID = useGetUserID();
   const [address, setAddress] = useState({});
@@ -45,6 +45,7 @@ function Address() {
     // Set initial address values when the address is fetched
     setAddressLine1(address.addressLine1);
     setAddressLine2(address.addressLine2);
+    setPhnumber(address.phNumber);
     setState(address.state);
     setCity(address.city);
     setPostalCode(address.postalCode);
@@ -69,6 +70,7 @@ function Address() {
           userAddress: {
             addressLine1,
             addressLine2,
+            phnumber,
             state,
             city,
             postalCode,
@@ -105,6 +107,7 @@ function Address() {
                 <div>
               <Typography>Address Line 1: <span style={{"font-size":"20px", "margin-left":"15px"}}>{address.addressLine1}</span> </Typography>
               <Typography>Address Line 2: <span style={{"font-size":"20px", "margin-left":"15px"}}>{address.addressLine2}</span></Typography>
+              <Typography>Phone Number: <span style={{"font-size":"20px", "margin-left":"15px"}}>{address.phnumber}</span></Typography>
               <Typography>State: <span style={{"font-size":"20px", "margin-left":"85px"}}>{address.state}</span></Typography>
               <Typography>City: <span style={{"font-size":"20px", "margin-left":"95px"}}>{address.city}</span></Typography>
               <Typography>Postal Code: <span style={{"font-size":"20px", "margin-left":"35px"}}>{address.postalCode}</span></Typography>
@@ -134,6 +137,12 @@ function Address() {
                 label="Address Line 2"
                 value={addressLine2}
                 onChange={(e) => setAddressLine2(e.target.value)}
+              />
+              <TextField
+                id="outlined-required"
+                label="Phone Number"
+                value={phnumber}
+                onChange={(e) => setPhnumber(e.target.value)}
               />
               <br />
               <TextField
@@ -191,7 +200,7 @@ function Address() {
                 Add Address
               </Button>
             </div>
-          )} 
+          )}
         </Box>
       </form>
     </div>
