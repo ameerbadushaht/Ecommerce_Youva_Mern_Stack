@@ -102,7 +102,7 @@ try{
                     {product.name}
                   </Typography>
                   <Typography variant="h6" className="price">
-                  ₹ {product.price}
+                  $ {product.price}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
                     Brand: {product.brand}
