@@ -133,4 +133,20 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+router.get("/countCart/:userID", async (req, res) => {
+
+  const userID  = req.params.userID;
+
+  try {
+    const cartFounded = await EachCartModel.findOne({userID})
+    if(cartFounded){
+      res.json("cartFounded")
+    }
+    if(!cartFounded){ res.json("cart Not Founded")}
+  } catch (error) {
+    console.log(error)
+  }
+
+})
+
 export { router as cartRouter };
