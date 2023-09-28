@@ -1,12 +1,11 @@
 ## Ecommerce Website Named YouvA
 
-!!! this is a incomplete project. It will update soon.
+
 
 ## In This Project :- 
 - User Module :
-  
 - Seller Module :
-
+- Paypal Payment Method
 
 Images : -
 - ![Login](https://github.com/ameerbadushaht/Ecommerce_Youva_Mern_Stack/assets/84665215/0f58d72e-e63f-413a-b1ce-1ad6ea573980)
