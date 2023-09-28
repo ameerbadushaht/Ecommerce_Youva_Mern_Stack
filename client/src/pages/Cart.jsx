@@ -1,6 +1,4 @@
 
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,77 +8,53 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
 import { useGetUserID } from "../hooks/useGetUserID";
-import { Link } from '@mui/material';
+import CartSummary from "../components/CartSummary";
+
+
+
 
 const Cart = () => {
-  // const { productId } = useParams();
-  // const [product, setProducts] = useState([]);
   const userID = useGetUserID();
+  const navigate = useNavigate();
   const [cart, setCart] = useState({ cartItems: [] });
-
+  const shippingCost = 50
+  // const totalCost = calculateTotal()
   useEffect(() => {
-   const fetchCartProducts = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/cart/show/${userID}`); // Replace with your endpoint
-      setCart(response.data.cart);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  fetchCartProducts();
+    const fetchCartProducts = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/cart/show/${userID}`
+        ); // Replace with your endpoint
+        setCart(response.data.cart);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCartProducts();
   }, []);
-  const addProduct = async (productID, currentQuantity) => {
-    try {
-      const response = await axios.post('http://localhost:3001/cart/add', {
-        userID,
-        cartItems: {
-          productID,
-          quantity: 1, // Adding 1 to the current quantity
-        },
-      });
-  
-      if (response.data.message === "Quantity increased.") {
-        // Update the UI to reflect the new quantity
-        // Find the product in the cart and update its quantity
-        const updatedCart = { ...cart }; // Make a copy of the cart state
-        const updatedProductIndex = updatedCart.cartItems.findIndex(
-          (item) => item.productID === productID
-        );
-  
-        if (updatedProductIndex !== -1) {
-          updatedCart.cartItems[updatedProductIndex].quantity = currentQuantity + 1;
-          setCart(updatedCart); // Update the cart state with the new quantity
-        }
-      } else if (response.data.message === "Product added to cart.") {
-        alert("Product added to cart.");
-      }
-    } catch (error) {
-      console.error("Error adding to Cart:", error);
+  const calculateTotal = () => {
+    var totalCost = 0;
+    cart.cartItems.forEach((product) => {
+      totalCost += product.price * product.quantity;
+    });
+    return totalCost;
+  };
+
+  const calculateShippingDiscount = () => {
+    // Check if the total amount is greater than 5000
+    if (calculateTotal() > 50) {
+      // If it is, subtract the shipping cost
+      return shippingCost;
+    } else {
+      // Otherwise, no discount
+      return 0;
     }
   };
-  
+const checkOut=(totalCost)=>{
+console.log(totalCost)
+navigate('/CheckOut')
 
-const addToCart= async(productID,price,quantity)=>{
-  // 
-  try{ 
-    const response = await axios.post('http://localhost:3001/cart/add',{
-      userID,
-          cartItems: {
-            productID,
-            quantity,
-            price,
-          },
-      if(response){
-        // navigate(`/Cart/${productID}`)
-        
-      }
-  
-    });
-    alert("Cart added")
-  
-     
-  }catch(error){ console.error("Error adding to Cart : ", error);}
-  }
+}
 
   return (
     <Container>
@@ -97,72 +71,71 @@ const addToCart= async(productID,price,quantity)=>{
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
-           
           <Info>
-          {cart.cartItems.map((product)=>(
-            <Product>
-              
-              <ProductDetail>
-                <Image  src={product.imageUrl}
-                  alt={product.name}
-                  />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> {product.name}
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> {product._id}
-                  </ProductId>
-             
-                  <ProductSize>
-                    <b>Size:</b> {product.size}
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                {/* <Link sx={{textDecoration:'none', color:"black", cursor:"pointer"}} onClick={()=>addToCart(product._id,product.price)}>ADD TO CART</Link>  */}
-                  <AddIcon/>
-                  <ProductAmount>{product.quantity}</ProductAmount>
-                  <div><RemoveIcon /></div>
-                </ProductAmountContainer>
-                <ProductPrice>₹ {product.price * product.quantity}</ProductPrice> 
+            {cart.cartItems.map((product) => (
+              <Product key={product.id}>
+                <ProductDetail>
+                  <Image src={product.imageUrl} alt={product.name} />
+                  <Details>
+                    <ProductName>
+                      <b>Product:</b> {product.name}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID:</b> {product._id}
+                    </ProductId>
 
-              </PriceDetail>
-            </Product>
+                    <ProductSize>
+                      <b>Size:</b> {product.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetail>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    {/* <Link sx={{textDecoration:'none', color:"black", cursor:"pointer"}} 
+                    onClick={()=>addToCart(product._id,product.price,product.quantity)}>
+                      ADD TO CART
+                    </Link>  */}
+                    {/* <AddIcon /> */}
+                    <b>No of Items: </b><ProductAmount>{product.quantity}</ProductAmount>
+                    {/* <RemoveIcon /> */}
+                  </ProductAmountContainer>
+                  <ProductPrice>
+                    $ {product.price * product.quantity}
+                  </ProductPrice>
+                </PriceDetail>
+              </Product>
             ))}
             <Hr />
           </Info>
-      
-
-
 
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>₹ 7909</SummaryItemPrice>
+              <SummaryItemPrice>$ {calculateTotal()} </SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>₹ 50.90</SummaryItemPrice>
+              <SummaryItemPrice>$ 50</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>₹ -50.90</SummaryItemPrice>
+              <SummaryItemPrice>$-{calculateShippingDiscount()}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>₹ 7909</SummaryItemPrice>
+              <SummaryItemPrice>${calculateTotal() + shippingCost - calculateShippingDiscount()}</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
+            <Button onClick={()=>{checkOut(calculateTotal())}}>CHECKOUT NOW</Button>
           </Summary>
+          {/* <CartSummary/> */}
         </Bottom>
       </Wrapper>
       <Footer />
     </Container>
   );
 };
+
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -173,6 +146,7 @@ const Wrapper = styled.div`
 const Title = styled.h1`
   font-weight: 300;
   text-align: center;
+  ${mobile({ fontSize: "20px" })}
 `;
 
 const Top = styled.div`
@@ -205,7 +179,6 @@ const Bottom = styled.div`
   display: flex;
   justify-content: space-between;
   ${mobile({ flexDirection: "column" })}
-
 `;
 
 const Info = styled.div`
@@ -238,13 +211,6 @@ const ProductName = styled.span``;
 
 const ProductId = styled.span``;
 
-// const ProductColor = styled.div`
-//   width: 20px;
-//   height: 20px;
-//   border-radius: 50%;
-//   background-color: ${(props) => props.color};
-// `;
-
 const ProductSize = styled.span``;
 
 const PriceDetail = styled.div`
@@ -259,17 +225,20 @@ const ProductAmountContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  ${mobile({ fontSize: "10px" })}
 `;
 
 const ProductAmount = styled.div`
   font-size: 24px;
   margin: 5px;
+
   ${mobile({ margin: "5px 15px" })}
 `;
 
 const ProductPrice = styled.div`
   font-size: 30px;
   font-weight: 200;
+  ${mobile({ fontSize: "20px" })}
   ${mobile({ marginBottom: "20px" })}
 `;
 
